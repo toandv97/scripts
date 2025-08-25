@@ -1,0 +1,57 @@
+#!/bin/bash
+
+# Function to check the status of the last command and exit if it failed
+check_command_status() {
+    if [ $? -ne 0 ]; then
+        echo "---> ERR: $1. Exiting."
+        exit 1
+    fi
+}
+
+push
+check_command_status "Failed to push working branch"
+
+# Get the current branch name
+CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+
+# Check if the source branch parameter is provided
+if [ -z "$1" -o "$1" == "." ]; then
+    SOURCE_BRANCH=$CURRENT_BRANCH
+else
+    SOURCE_BRANCH=$1
+fi
+
+# Set the target branch to 'develop' if not provided
+if [ -z "$2" ]; then
+    TARGET_BRANCH=develop
+else
+    TARGET_BRANCH=$2
+fi
+
+git stash push -m "stash config" sys.ini init.php
+STASH_STATUS=$?
+
+# Step 1: Checkout target branch
+git checkout "$TARGET_BRANCH"
+check_command_status "Failed to checkout target branch"
+
+# Step 2: Pull the latest changes from the target branch
+git pull origin "$TARGET_BRANCH"
+check_command_status "Failed to pull latest changes from target branch"
+
+# Step 4: Merge code from the specified branch
+git merge "$SOURCE_BRANCH"
+check_command_status "Failed to merge code from source branch"
+
+# Step 5: Push code to remote
+git push origin "$TARGET_BRANCH"
+check_command_status "Failed to push code to remote"
+
+# Step 6: Checkout to the specified branch
+git checkout "$SOURCE_BRANCH"
+check_command_status "Failed to checkout source branch"
+
+if [ $STASH_STATUS -eq 0 ]; then
+    git stash pop
+	check_command_status "Failed to pop stash config"
+fi

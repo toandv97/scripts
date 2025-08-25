@@ -1,0 +1,35 @@
+#!/bin/bash
+
+# Function to check the status of the last command and exit if it failed
+check_command_status() {
+    if [ $? -ne 0 ]; then
+        echo "!!! ERR: $1. Exiting."
+        exit 1
+    fi
+}
+
+# Check if the source branch parameter is provided
+if [ -z "$1" ]; then
+    MSG="mirror update"
+else
+    MSG=$1
+fi
+
+git stash push -m "stash config" sys.ini init.php
+STASH_STATUS=$?
+
+git status
+
+git add .
+
+git commit -m "$MSG"
+
+git push "${@:2}"
+check_command_status "Failed to push code to remote"
+
+if [ $STASH_STATUS -eq 0 ]; then
+    git stash pop
+	check_command_status "Failed to pop stash config"
+fi
+
+exit 0
