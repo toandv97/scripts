@@ -32,6 +32,13 @@ if [ -n "$CREATE_BRANCH" ]; then
     exit 0
 fi
 
+# If a branch name is provided as a positional argument, checkout that branch
+if [ -n "$1" ]; then
+    info "Checking out branch '$1'"
+    git checkout "$1"
+    check_cmd "Failed to checkout branch '$1'"
+fi
+
 if [ -n "$DO_PULL" ]; then
     info "Pulling latest changes from branch '$1'"
     git pull origin "$1"
