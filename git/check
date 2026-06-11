@@ -2,16 +2,40 @@
 
 source common
 
-git checkout "${@:2}" $1
-check_cmd "Failed to checkout branch $1"
+# Support usage like: check -b <branch_name> or check <branch_name>
+CREATE_BRANCH=""
+while getopts "b:p:h" opt; do
+    case $opt in
+        b)
+            CREATE_BRANCH="$OPTARG"
+            ;;
+        p)
+            DO_PULL=1
+            ;;
+        h)
+            echo "Usage: $(basename "$0") [-b branch_name] [-p] [branch_name]"
+            echo "  -b branch_name   Create and checkout new branch"
+            echo "  -p               Also pull after checkout"
+            exit 0
+            ;;
+        \?)
+            err "Usage: $(basename "$0") [-b branch_name] [-p] [branch_name]"
+            exit 1
+    esac
+done
+shift $((OPTIND - 1))
 
-sep
-
-if [ "$2" == "-p" ]; then
-    git pull origin $1
-	check_cmd "Failed to pull code from remote for branch $1"
+if [ -n "$CREATE_BRANCH" ]; then
+    info "Creating and checking out new branch '$CREATE_BRANCH'"
+    git checkout -b "$CREATE_BRANCH"
+    check_cmd "Failed to create and checkout new branch '$CREATE_BRANCH'"
+    exit 0
 fi
 
-success "Branch $1 checked out"
+if [ -n "$DO_PULL" ]; then
+    info "Pulling latest changes from branch '$1'"
+    git pull origin "$1"
+    check_cmd "Failed to pull latest changes from branch '$1'"
+fi
 
 exit 0

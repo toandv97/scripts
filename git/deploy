@@ -44,11 +44,11 @@ git checkout "$TARGET_BRANCH"
 check_cmd "Failed to checkout target branch"
 
 info "Pulling latest changes from target branch"
-git pull origin "$TARGET_BRANCH"
+git pull origin "$TARGET_BRANCH" --rebase=false --no-edit
 check_cmd "Failed to pull latest changes from target branch"
 
 info "Merging code from source branch"
-git merge "$SOURCE_BRANCH"
+git merge "$SOURCE_BRANCH" --no-edit --rebase=false
 check_cmd "Failed to merge code from source branch"
 
 info "Pushing code to remote"
