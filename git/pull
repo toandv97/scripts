@@ -17,5 +17,5 @@ else
 fi
 
 
-git pull origin "$BRANCH"
+git pull origin "$BRANCH" --rebase=false --no-edit
 check_command_status "Failed to pull code from remote"

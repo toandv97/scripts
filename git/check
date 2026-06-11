@@ -8,20 +8,12 @@ check_command_status() {
     fi
 }
 
-git stash push -m "stash config" sys.ini init.php
-STASH_STATUS=$?
-
 git checkout "${@:2}" $1
 check_command_status
 
 if [ "$2" == "-p" ]; then
     git pull origin $1
 	check_command_status "Failed to pull code from remote"
-fi
-
-if [ $STASH_STATUS -eq 0 ]; then
-    git stash pop
-	check_command_status "Failed to pop stash config"
 fi
 
 exit 0

@@ -8,8 +8,25 @@ check_command_status() {
     fi
 }
 
-push
-check_command_status "Failed to push working branch"
+MERGE_MSG=""
+
+while getopts "m:h" opt; do
+    case $opt in
+        m) MERGE_MSG="$OPTARG" ;;
+        h)
+            echo "Usage: $(basename "$0") [-m \"merge commit message\"] [source_branch] [target_branch]"
+            echo "  -m message   Use this message for the merge commit (then push target branch)."
+            echo "  source_branch  Branch to merge (default: current branch, or . for current)"
+            echo "  target_branch  Branch to merge into (default: develop)"
+            exit 0
+            ;;
+        \?) echo "Usage: $(basename "$0") [-m message] [source_branch] [target_branch]"; exit 1 ;;
+    esac
+done
+shift $((OPTIND - 1))
+
+push $MERGE_MSG
+check_command_status
 
 # Get the current branch name
 CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
@@ -27,9 +44,6 @@ if [ -z "$2" ]; then
 else
     TARGET_BRANCH=$2
 fi
-
-git stash push -m "stash config" sys.ini init.php
-STASH_STATUS=$?
 
 # Step 1: Checkout target branch
 git checkout "$TARGET_BRANCH"
@@ -50,8 +64,3 @@ check_command_status "Failed to push code to remote"
 # Step 6: Checkout to the specified branch
 git checkout "$SOURCE_BRANCH"
 check_command_status "Failed to checkout source branch"
-
-if [ $STASH_STATUS -eq 0 ]; then
-    git stash pop
-	check_command_status "Failed to pop stash config"
-fi
