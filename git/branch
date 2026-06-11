@@ -1,0 +1,112 @@
+#!/bin/bash
+
+source common
+
+# Mimic 'git branch' command with most common options
+
+usage() {
+    echo "Usage: $(basename "$0") [options] [branch]"
+    echo "Options:"
+    echo "  -a        List both local and remote-tracking branches"
+    echo "  -r        List only remote-tracking branches"
+    echo "  -d NAME   Delete the branch NAME (safe, checks for merged)"
+    echo "  -D NAME   Force delete the branch NAME"
+    echo "  -m OLD NEW  Move/Rename branch OLD to NEW"
+    echo "  -M OLD NEW  Force move/rename branch OLD to NEW"
+    echo "  -h        Show this help message"
+    echo "  [branch]  Create new branch or show status (checked out branch is highlighted)"
+}
+
+if [ "$1" = "-h" ]; then
+    usage
+    exit 0
+fi
+
+while [[ $# -gt 0 ]]; do
+    key="$1"
+    case $key in
+        -a)
+            git branch -a
+            exit $?
+            ;;
+        -r)
+            git branch -r
+            exit $?
+            ;;
+        -d)
+            if [ -z "$2" ]; then
+                err "You must specify a branch name to delete."
+                usage
+                exit 1
+            fi
+            git branch -d "$2"
+            check_cmd "Failed to delete branch $2"
+            exit 0
+            ;;
+        -D)
+            if [ -z "$2" ]; then
+                err "You must specify a branch name to force delete."
+                usage
+                exit 1
+            fi
+            git branch -D "$2"
+            check_cmd "Failed to force delete branch $2"
+            exit 0
+            ;;
+        -m)
+            if [ -z "$2" ] || [ -z "$3" ]; then
+                err "You must specify the old and new branch names."
+                usage
+                exit 1
+            fi
+            git branch -m "$2" "$3"
+            check_cmd "Failed to rename branch $2 to $3"
+            exit 0
+            ;;
+        -M)
+            if [ -z "$2" ] || [ -z "$3" ]; then
+                err "You must specify the old and new branch names."
+                usage
+                exit 1
+            fi
+            git branch -M "$2" "$3"
+            check_cmd "Failed to forcibly rename branch $2 to $3"
+            exit 0
+            ;;
+        -h)
+            usage
+            exit 0
+            ;;
+        -*)
+            err "Unknown option: $1"
+            usage
+            exit 1
+            ;;
+        *)
+            break
+            ;;
+    esac
+done
+
+if [ $# -eq 0 ]; then
+    # List local branches, mark current branch
+    git branch
+    exit $?
+fi
+
+BRANCH="$1"
+# If additional args provided with the branch name, treat as error
+if [ $# -gt 1 ]; then
+    err "Unexpected extra argument(s)."
+    usage
+    exit 1
+fi
+
+# Create new branch
+info "Creating branch '$BRANCH'"
+git branch "$BRANCH"
+check_cmd "Failed to create branch $BRANCH"
+
+success "Branch '$BRANCH' created."
+exit 0
+
