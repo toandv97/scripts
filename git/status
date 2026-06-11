@@ -3,3 +3,6 @@
 source common
 
 git status
+check_cmd "Failed to get git status"
+
+exit 0

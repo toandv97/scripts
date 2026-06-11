@@ -3,11 +3,15 @@
 source common
 
 git checkout "${@:2}" $1
-check_cmd
+check_cmd "Failed to checkout branch $1"
+
+sep
 
 if [ "$2" == "-p" ]; then
     git pull origin $1
-	check_cmd "Failed to pull code from remote"
+	check_cmd "Failed to pull code from remote for branch $1"
 fi
+
+success "Branch $1 checked out"
 
 exit 0

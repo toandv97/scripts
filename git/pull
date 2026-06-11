@@ -9,6 +9,9 @@ else
     BRANCH=$1
 fi
 
-
 git pull origin "$BRANCH" --rebase=false --no-edit
 check_cmd "Failed to pull code from remote"
+
+success "Code pulled from remote"
+
+exit 0

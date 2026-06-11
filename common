@@ -1,9 +1,32 @@
 #!/bin/bash
 
+sep() {
+    [ -z "$1" ] && set -- "-" "${2:-15}"
+    [ -z "$2" ] && set -- "$1" 15
+    for ((i=0; i<$2; i++)); do
+        echo "$1"
+    done
+}
+
+info() {
+    # Blue color
+    echo -e "\033[1;34m INFO: $1\033[0m"
+}
+
+err() {
+    # Red color
+    echo -e "\033[1;31m ERR: $1\033[0m"
+}
+
+success() {
+    # Green color
+    echo -e "\033[1;32m SUCCESS: $1\033[0m"
+}
+
 # Function to check the status command and exit if it failed
 check_cmd() {
     if [ $? -ne 0 ]; then
-        echo "---> ERR: $1. Exiting."
+        err "$1. Exiting."
         exit 1
     fi
 }

@@ -20,7 +20,7 @@ done
 shift $((OPTIND - 1))
 
 push $MERGE_MSG
-check_cmd
+check_cmd "Failed to push code to remote"
 
 # Get the current branch name
 CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
@@ -39,22 +39,26 @@ else
     TARGET_BRANCH=$2
 fi
 
-# Step 1: Checkout target branch
+info "Checking out target branch"
 git checkout "$TARGET_BRANCH"
 check_cmd "Failed to checkout target branch"
 
-# Step 2: Pull the latest changes from the target branch
+info "Pulling latest changes from target branch"
 git pull origin "$TARGET_BRANCH"
 check_cmd "Failed to pull latest changes from target branch"
 
-# Step 4: Merge code from the specified branch
+info "Merging code from source branch"
 git merge "$SOURCE_BRANCH"
 check_cmd "Failed to merge code from source branch"
 
-# Step 5: Push code to remote
+info "Pushing code to remote"
 git push origin "$TARGET_BRANCH"
 check_cmd "Failed to push code to remote"
 
-# Step 6: Checkout to the specified branch
+info "Checking out source branch"
 git checkout "$SOURCE_BRANCH"
 check_cmd "Failed to checkout source branch"
+
+success "Code deployed successfully"
+
+exit 0
