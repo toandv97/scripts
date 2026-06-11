@@ -1,4 +1,5 @@
 #!/bin/bash
 
-# Function to check the status of  last command and exit if it failed
+source common
+
 git status

@@ -1,12 +1,6 @@
 #!/bin/bash
 
-# Function to check the status of the last command and exit if it failed
-check_command_status() {
-    if [ $? -ne 0 ]; then
-        echo "---> ERR: $1. Exiting."
-        exit 1
-    fi
-}
+source common
 
 MERGE_MSG=""
 
@@ -26,7 +20,7 @@ done
 shift $((OPTIND - 1))
 
 push $MERGE_MSG
-check_command_status
+check_cmd
 
 # Get the current branch name
 CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
@@ -47,20 +41,20 @@ fi
 
 # Step 1: Checkout target branch
 git checkout "$TARGET_BRANCH"
-check_command_status "Failed to checkout target branch"
+check_cmd "Failed to checkout target branch"
 
 # Step 2: Pull the latest changes from the target branch
 git pull origin "$TARGET_BRANCH"
-check_command_status "Failed to pull latest changes from target branch"
+check_cmd "Failed to pull latest changes from target branch"
 
 # Step 4: Merge code from the specified branch
 git merge "$SOURCE_BRANCH"
-check_command_status "Failed to merge code from source branch"
+check_cmd "Failed to merge code from source branch"
 
 # Step 5: Push code to remote
 git push origin "$TARGET_BRANCH"
-check_command_status "Failed to push code to remote"
+check_cmd "Failed to push code to remote"
 
 # Step 6: Checkout to the specified branch
 git checkout "$SOURCE_BRANCH"
-check_command_status "Failed to checkout source branch"
+check_cmd "Failed to checkout source branch"

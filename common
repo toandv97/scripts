@@ -1,0 +1,9 @@
+#!/bin/bash
+
+# Function to check the status command and exit if it failed
+check_cmd() {
+    if [ $? -ne 0 ]; then
+        echo "---> ERR: $1. Exiting."
+        exit 1
+    fi
+}

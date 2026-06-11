@@ -1,19 +1,13 @@
 #!/bin/bash
 
-# Function to check the status of the last command and exit if it failed
-check_command_status() {
-    if [ $? -ne 0 ]; then
-        echo "!!! ERR: $1. Exiting."
-        exit 1
-    fi
-}
+source common
 
 git checkout "${@:2}" $1
-check_command_status
+check_cmd
 
 if [ "$2" == "-p" ]; then
     git pull origin $1
-	check_command_status "Failed to pull code from remote"
+	check_cmd "Failed to pull code from remote"
 fi
 
 exit 0
