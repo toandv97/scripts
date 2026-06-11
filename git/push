@@ -9,6 +9,8 @@ else
     MSG=$1
 fi
 
+info "Checking git status"
+
 status
 
 sep
