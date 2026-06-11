@@ -41,17 +41,17 @@ fi
 
 sep
 
-info "Checking out target branch"
+info "Checking out $TARGET_BRANCH"
 git checkout "$TARGET_BRANCH"
 check_cmd "Failed to checkout target branch"
 
-info "Pulling latest changes from target branch"
+info "Pulling latest changes from $TARGET_BRANCH"
 git pull origin "$TARGET_BRANCH" --rebase=false --no-edit
 check_cmd "Failed to pull latest changes from target branch"
 
-info "Merging code from source branch"
-git merge "$SOURCE_BRANCH" --no-edit --rebase=false
-check_cmd "Failed to merge code from source branch"
+info "Merging code from $SOURCE_BRANCH"
+git merge "$SOURCE_BRANCH" --rebase=false --no-edit
+check_cmd "Failed to merge code from $SOURCE_BRANCH"
 
 info "Pushing code to remote"
 git push origin "$TARGET_BRANCH"
