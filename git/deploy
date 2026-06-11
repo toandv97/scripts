@@ -49,6 +49,8 @@ info "Pulling latest changes from [$TARGET_BRANCH]"
 git pull origin "$TARGET_BRANCH" --rebase=false --no-edit
 check_cmd "Failed to pull latest changes from target branch"
 
+sep
+
 info "Merging code from [$SOURCE_BRANCH]"
 git merge "$SOURCE_BRANCH" --no-edit
 check_cmd "Failed to merge code from $SOURCE_BRANCH"
@@ -56,6 +58,8 @@ check_cmd "Failed to merge code from $SOURCE_BRANCH"
 info "Pushing code to [$TARGET_BRANCH]"
 git push origin "$TARGET_BRANCH"
 check_cmd "Failed to push code to remote"
+
+sep
 
 info "Checking out [$SOURCE_BRANCH]"
 git checkout "$SOURCE_BRANCH"

@@ -1,0 +1,98 @@
+#!/bin/bash
+
+source common
+
+# Mimic 'git stash' command with common options
+
+usage() {
+    echo "Usage: $(basename "$0") [options] [message]"
+    echo "Options:"
+    echo "  -l, list            Show list of stashes"
+    echo "  -s, save [msg]      Stash current changes (optionally with message)"
+    echo "  -a, apply [N]       Apply stash (default latest, or provide stash@{N})"
+    echo "  -p, pop [N]         Pop stash (default latest, or provide stash@{N})"
+    echo "  -d, drop [N]        Drop stash (default latest, or provide stash@{N})"
+    echo "  -c, clear           Remove all stashes"
+    echo "  -h, help            Show this help message"
+}
+
+if [ $# -eq 0 ]; then
+    git stash list
+    check_cmd "Failed to list stashes"
+    exit 0
+fi
+
+while [[ $# -gt 0 ]]; do
+    key="$1"
+    case $key in
+        -l|list)
+            git stash list
+            check_cmd "Failed to list stashes"
+            exit 0
+            ;;
+        -s|save)
+            if [ -n "$2" ] && [[ "$2" != -* ]]; then
+                MSG="$2"
+                git stash save "$MSG"
+                check_cmd "Failed to save stash: $MSG"
+                shift
+            else
+                git stash save
+                check_cmd "Failed to save stash"
+            fi
+            exit 0
+            ;;
+        -a|apply)
+            if [ -n "$2" ] && [[ "$2" != -* ]]; then
+                STASH_REF="$2"
+                git stash apply "stash@{$STASH_REF}"
+                check_cmd "Failed to apply stash@{$STASH_REF}"
+                shift
+            else
+                git stash apply
+                check_cmd "Failed to apply latest stash"
+            fi
+            exit 0
+            ;;
+        -p|pop)
+            if [ -n "$2" ] && [[ "$2" != -* ]]; then
+                STASH_REF="$2"
+                git stash pop "stash@{$STASH_REF}"
+                check_cmd "Failed to pop stash@{$STASH_REF}"
+                shift
+            else
+                git stash pop
+                check_cmd "Failed to pop latest stash"
+            fi
+            exit 0
+            ;;
+        -d|drop)
+            if [ -n "$2" ] && [[ "$2" != -* ]]; then
+                STASH_REF="$2"
+                git stash drop "stash@{$STASH_REF}"
+                check_cmd "Failed to drop stash@{$STASH_REF}"
+                shift
+            else
+                git stash drop
+                check_cmd "Failed to drop latest stash"
+            fi
+            exit 0
+            ;;
+        -c|clear)
+            git stash clear
+            check_cmd "Failed to clear stashes"
+            exit 0
+            ;;
+        -h|help)
+            usage
+            exit 0
+            ;;
+        *)
+            err "Unknown option: $1"
+            usage
+            exit 1
+            ;;
+    esac
+    shift
+done
+
