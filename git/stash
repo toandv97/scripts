@@ -4,6 +4,14 @@ source common
 
 # Mimic 'git stash' command with common options
 
+# If called without flags, mimic "git stash" as in vanilla git (acts like 'git stash push')
+if [ $# -eq 0 ]; then
+    git stash push
+    check_cmd "Failed to stash changes"
+    exit 0
+fi
+
+
 usage() {
     echo "Usage: $(basename "$0") [options] [message]"
     echo "Options:"
@@ -15,12 +23,6 @@ usage() {
     echo "  -c, clear           Remove all stashes"
     echo "  -h, help            Show this help message"
 }
-
-if [ $# -eq 0 ]; then
-    git stash list
-    check_cmd "Failed to list stashes"
-    exit 0
-fi
 
 while [[ $# -gt 0 ]]; do
     key="$1"
@@ -96,3 +98,4 @@ while [[ $# -gt 0 ]]; do
     shift
 done
 
+exit 0

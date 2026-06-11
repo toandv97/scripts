@@ -1,0 +1,91 @@
+#!/bin/bash
+
+source common
+
+# Mimic 'git cherry-pick' with support for all common options
+
+usage() {
+    echo "Usage: $(basename "$0") [options] <commit>..."
+    echo "Options:"
+    echo "  -e, --edit           Edit commit message before committing"
+    echo "  -x                   Append commit hash to commit message"
+    echo "  -n, --no-commit      Apply changes but do not commit"
+    echo "  -s, --signoff        Add Signed-off-by line"
+    echo "  --continue           Continue after conflict resolution"
+    echo "  --abort              Cancel cherry-pick and restore state"
+    echo "  --quit               End cherry-pick without committing (keeps changes)"
+    echo "  -h, --help           Show this help message"
+}
+
+# If no arguments, show usage
+if [ $# -eq 0 ]; then
+    usage
+    exit 1
+fi
+
+OPTS=()
+COMMITS=()
+
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        -e|--edit)
+            OPTS+=("--edit")
+            shift
+            ;;
+        -x)
+            OPTS+=("-x")
+            shift
+            ;;
+        -n|--no-commit)
+            OPTS+=("--no-commit")
+            shift
+            ;;
+        -s|--signoff)
+            OPTS+=("--signoff")
+            shift
+            ;;
+        --continue)
+            git cherry-pick --continue
+            check_cmd "Failed to continue cherry-pick"
+            exit 0
+            ;;
+        --abort)
+            git cherry-pick --abort
+            check_cmd "Failed to abort cherry-pick"
+            exit 0
+            ;;
+        --quit)
+            git cherry-pick --quit
+            check_cmd "Failed to quit cherry-pick"
+            exit 0
+            ;;
+        -h|--help)
+            usage
+            exit 0
+            ;;
+        -*)
+            err "Unknown option: $1"
+            usage
+            exit 1
+            ;;
+        *)
+            # Positional argument - commits/revisions
+            COMMITS+=("$1")
+            shift
+            ;;
+    esac
+done
+
+if [ ${#COMMITS[@]} -eq 0 ]; then
+    err "No commit(s) provided to cherry-pick."
+    usage
+    exit 1
+fi
+
+info "Cherry-picking: ${COMMITS[*]}"
+git cherry-pick "${OPTS[@]}" "${COMMITS[@]}"
+check_cmd "Failed to cherry-pick commit(s): ${COMMITS[*]}"
+
+success "Cherry-pick complete."
+exit 0
+

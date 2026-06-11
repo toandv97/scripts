@@ -61,6 +61,7 @@ check_cmd "Failed to push code to remote"
 
 sep
 
+
 info "Checking out [$SOURCE_BRANCH]"
 git checkout "$SOURCE_BRANCH"
 check_cmd "Failed to checkout source branch"
