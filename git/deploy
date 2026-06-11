@@ -39,6 +39,8 @@ else
     TARGET_BRANCH=$2
 fi
 
+sep
+
 info "Checking out target branch"
 git checkout "$TARGET_BRANCH"
 check_cmd "Failed to checkout target branch"
