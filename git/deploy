@@ -50,7 +50,7 @@ git pull origin "$TARGET_BRANCH" --rebase=false --no-edit
 check_cmd "Failed to pull latest changes from target branch"
 
 info "Merging code from $SOURCE_BRANCH"
-git merge "$SOURCE_BRANCH" --rebase=false --no-edit
+git merge "$SOURCE_BRANCH" --no-edit
 check_cmd "Failed to merge code from $SOURCE_BRANCH"
 
 info "Pushing code to remote"
