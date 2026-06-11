@@ -13,15 +13,16 @@ status
 
 sep
 
-info "Pushing code to remote"
+info "Committing changes"
 
 git add .
 
 git commit -m "$MSG"
 
+info "Pushing changes to remote"
 git push "${@:2}"
 check_cmd "Failed to push code to remote"
 
-success "Code pushed to remote"
+success "Changes pushed to remote"
 
 exit 0
