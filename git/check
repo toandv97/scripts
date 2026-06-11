@@ -41,7 +41,7 @@ fi
 
 if [ -n "$DO_PULL" ]; then
     info "Pulling latest changes from branch '$1'"
-    git pull origin "$1"
+    git pull origin "$1" --rebase=false --no-edit
     check_cmd "Failed to pull latest changes from branch '$1'"
 fi
 
