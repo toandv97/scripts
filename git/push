@@ -21,7 +21,7 @@ git add .
 
 git commit -m "$MSG"
 
-info "Pushing changes to remote"
+info "Pushing changes to [$1]"
 git push "${@:2}"
 check_cmd "Failed to push code to remote"
 

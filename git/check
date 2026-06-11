@@ -26,9 +26,9 @@ done
 shift $((OPTIND - 1))
 
 if [ -n "$CREATE_BRANCH" ]; then
-    info "Creating and checking out new branch '$CREATE_BRANCH'"
+    info "Creating and checking out new branch [$CREATE_BRANCH]"
     git checkout -b "$CREATE_BRANCH"
-    check_cmd "Failed to create and checkout new branch '$CREATE_BRANCH'"
+    check_cmd "Failed to create and checkout new branch [$CREATE_BRANCH]"
     exit 0
 fi
 
@@ -36,13 +36,13 @@ fi
 if [ -n "$1" ]; then
     info "Checking out branch '$1'"
     git checkout "$1"
-    check_cmd "Failed to checkout branch '$1'"
+    check_cmd "Failed to checkout branch [$1]"
 fi
 
 if [ -n "$DO_PULL" ]; then
-    info "Pulling latest changes from branch '$1'"
+    info "Pulling latest changes from branch [$1]"
     git pull origin "$1" --rebase=false --no-edit
-    check_cmd "Failed to pull latest changes from branch '$1'"
+    check_cmd "Failed to pull latest changes from branch [$1]"
 fi
 
 exit 0

@@ -103,10 +103,10 @@ if [ $# -gt 1 ]; then
 fi
 
 # Create new branch
-info "Creating branch '$BRANCH'"
+info "Creating branch [$BRANCH]"
 git branch "$BRANCH"
-check_cmd "Failed to create branch $BRANCH"
+check_cmd "Failed to create branch [$BRANCH]"
 
-success "Branch '$BRANCH' created."
+success "Branch [$BRANCH] created."
 exit 0
 
