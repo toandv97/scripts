@@ -53,14 +53,14 @@ info "Merging code from $SOURCE_BRANCH"
 git merge "$SOURCE_BRANCH" --no-edit
 check_cmd "Failed to merge code from $SOURCE_BRANCH"
 
-info "Pushing code to remote"
+info "Pushing code to $TARGET_BRANCH"
 git push origin "$TARGET_BRANCH"
 check_cmd "Failed to push code to remote"
 
-info "Checking out source branch"
+info "Checking out $SOURCE_BRANCH"
 git checkout "$SOURCE_BRANCH"
 check_cmd "Failed to checkout source branch"
 
-success "Code deployed successfully"
+success "Code deployed from $SOURCE_BRANCH to $TARGET_BRANCH"
 
 exit 0
