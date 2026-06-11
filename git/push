@@ -23,6 +23,4 @@ info "Pushing changes to remote"
 git push "${@:2}"
 check_cmd "Failed to push code to remote"
 
-success "Changes pushed to remote"
-
 exit 0
