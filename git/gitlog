@@ -1,0 +1,138 @@
+#!/bin/bash
+
+source common
+
+# Mimic 'git log' command with common options
+
+# If called without flags, mimic "git log"
+if [ $# -eq 0 ]; then
+    git log
+    check_cmd "Failed to show log"
+    exit 0
+fi
+
+usage() {
+    echo "Usage: $(basename "$0") [options] [arg]"
+    echo "Options:"
+    echo "  -n, count N         Show last N commits"
+    echo "  -o, oneline         One line per commit"
+    echo "  -l, lines           Oneline with graph and decorations"
+    echo "  -g, graph           Show commit graph"
+    echo "  -a, all             All branches"
+    echo "  -s, stat            Show diffstat"
+    echo "  -p, patch           Show patch diff"
+    echo "  -1, last            Show latest commit only"
+    echo "  -f, follow FILE     Log for file (with renames)"
+    echo "  -r, range REV       Log for revision/range"
+    echo "  --author NAME       Filter by author"
+    echo "  --since DATE        Commits after date"
+    echo "  -h, help            Show this help message"
+}
+
+while [[ $# -gt 0 ]]; do
+    key="$1"
+    case $key in
+        -n|count)
+            shift
+            if [ -z "$1" ]; then
+                err "Count required"
+                usage
+                exit 1
+            fi
+            git log -n "$1"
+            check_cmd "Failed to show log"
+            exit 0
+            ;;
+        -o|oneline)
+            git log --oneline
+            check_cmd "Failed to show log"
+            exit 0
+            ;;
+        -l|lines)
+            git log --oneline --graph --decorate
+            check_cmd "Failed to show log"
+            exit 0
+            ;;
+        -g|graph)
+            git log --graph
+            check_cmd "Failed to show log"
+            exit 0
+            ;;
+        -a|all)
+            git log --all
+            check_cmd "Failed to show log"
+            exit 0
+            ;;
+        -s|stat)
+            git log --stat
+            check_cmd "Failed to show log"
+            exit 0
+            ;;
+        -p|patch)
+            git log -p
+            check_cmd "Failed to show log"
+            exit 0
+            ;;
+        -1|last)
+            git log -1
+            check_cmd "Failed to show log"
+            exit 0
+            ;;
+        -f|follow)
+            shift
+            if [ -z "$1" ]; then
+                err "File required"
+                usage
+                exit 1
+            fi
+            git log --follow -- "$1"
+            check_cmd "Failed to show log for $1"
+            exit 0
+            ;;
+        -r|range)
+            shift
+            if [ -z "$1" ]; then
+                err "Revision/range required"
+                usage
+                exit 1
+            fi
+            git log "$1"
+            check_cmd "Failed to show log for $1"
+            exit 0
+            ;;
+        --author)
+            shift
+            if [ -z "$1" ]; then
+                err "Author required"
+                usage
+                exit 1
+            fi
+            git log --author="$1"
+            check_cmd "Failed to show log for author $1"
+            exit 0
+            ;;
+        --since)
+            shift
+            if [ -z "$1" ]; then
+                err "Date required"
+                usage
+                exit 1
+            fi
+            git log --since="$1"
+            check_cmd "Failed to show log since $1"
+            exit 0
+            ;;
+        -h|help)
+            usage
+            exit 0
+            ;;
+        *)
+            err "Unknown option: $1"
+            usage
+            exit 1
+            ;;
+    esac
+    shift
+done
+
+exit 0
