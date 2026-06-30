@@ -2,12 +2,30 @@
 
 source common
 
-# Check if the source branch parameter is provided
-if [ -z "$1" ]; then
-    MSG="mirror update"
-else
-    MSG=$1
-fi
+# This script mimics 'git push', passing all options and arguments through.
+# All arguments after the optional msg: -m "your commit msg" are passed to git push.
+# USAGE: ./push [-m "commit msg"] [<push-target> [<refspec>...]] [git-push-options...]
+
+COMMIT_MSG=""
+ARGS=()
+
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        -m)
+            shift
+            if [ -z "$1" ]; then
+                echo "Error: -m requires a commit message"
+                exit 1
+            fi
+            COMMIT_MSG="$1"
+            shift
+            ;;
+        *)
+            ARGS+=("$1")
+            shift
+            ;;
+    esac
+done
 
 info "Checking git status"
 
@@ -19,10 +37,14 @@ info "Committing changes"
 
 git add .
 
-git commit -m "$MSG"
+if [ -z "$COMMIT_MSG" ]; then
+    COMMIT_MSG="Mirror update - automated commit"
+fi
 
-info "Pushing changes to [$1]"
-git push "${@:2}"
+git commit -m "$COMMIT_MSG" || info "No changes to commit"
+
+info "Pushing changes with: git push ${ARGS[*]}"
+git push "${ARGS[@]}"
 check_cmd "Failed to push code to remote"
 
 exit 0

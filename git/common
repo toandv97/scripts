@@ -1,0 +1,30 @@
+#!/bin/bash
+
+sep() {
+    [ -z "$1" ] && set -- "=" "${2:-30}"
+    [ -z "$2" ] && set -- "$1" 30
+    printf '%s\n' "$(printf "%0.s$1" $(seq 1 $2))"
+}
+
+info() {
+    # Blue color
+    echo -e "\033[1;34mINFO: $1\033[0m"
+}
+
+err() {
+    # Red color
+    echo -e "\033[1;31mERR: $1\033[0m"
+}
+
+success() {
+    # Green color
+    echo -e "\033[1;32mSUCCESS: $1\033[0m"
+}
+
+# Function to check the status command and exit if it failed
+check_cmd() {
+    if [ $? -ne 0 ]; then
+        err "$1. Exiting."
+        exit 1
+    fi
+}

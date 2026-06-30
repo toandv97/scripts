@@ -1,0 +1,134 @@
+#!/bin/bash
+
+source common
+
+# Mimic 'git commit' command with common options
+
+# If called without flags, mimic "git commit" (opens editor)
+if [ $# -eq 0 ]; then
+    git commit
+    check_cmd "Failed to commit"
+    exit 0
+fi
+
+usage() {
+    echo "Usage: $(basename "$0") [options] [message]"
+    echo "Options:"
+    echo "  -m, message MSG     Commit with message"
+    echo "  -a, all [msg]       Commit all tracked changes (optionally with message)"
+    echo "  -A, add [msg]       Stage all and commit (optionally with message)"
+    echo "  --amend [msg]       Amend previous commit (optionally with new message)"
+    echo "  --no-edit           Amend without editing message"
+    echo "  -s, signoff         Add Signed-off-by line"
+    echo "  -n, no-verify       Skip pre-commit and commit-msg hooks"
+    echo "  --empty             Allow empty commit"
+    echo "  -h, help            Show this help message"
+}
+
+while [[ $# -gt 0 ]]; do
+    key="$1"
+    case $key in
+        -m|message)
+            shift
+            if [ -z "$1" ]; then
+                err "Message required"
+                usage
+                exit 1
+            fi
+            git commit -m "$1"
+            check_cmd "Failed to commit: $1"
+            exit 0
+            ;;
+        -a|all)
+            shift
+            if [ -n "$1" ] && [[ "$1" != -* ]]; then
+                git commit -a -m "$1"
+                check_cmd "Failed to commit all changes: $1"
+                shift
+            else
+                git commit -a
+                check_cmd "Failed to commit all changes"
+            fi
+            exit 0
+            ;;
+        -A|add)
+            shift
+            git add .
+            check_cmd "Failed to stage changes"
+            if [ -n "$1" ] && [[ "$1" != -* ]]; then
+                git commit -m "$1"
+                check_cmd "Failed to commit: $1"
+                shift
+            else
+                git commit
+                check_cmd "Failed to commit"
+            fi
+            exit 0
+            ;;
+        --amend)
+            shift
+            if [ -n "$1" ] && [[ "$1" != -* ]]; then
+                git commit --amend -m "$1"
+                check_cmd "Failed to amend commit: $1"
+                shift
+            else
+                git commit --amend
+                check_cmd "Failed to amend commit"
+            fi
+            exit 0
+            ;;
+        --no-edit)
+            git commit --amend --no-edit
+            check_cmd "Failed to amend commit without editing"
+            exit 0
+            ;;
+        -s|signoff)
+            shift
+            if [ -n "$1" ] && [[ "$1" != -* ]]; then
+                git commit -s -m "$1"
+                check_cmd "Failed to commit with signoff: $1"
+                shift
+            else
+                git commit -s
+                check_cmd "Failed to commit with signoff"
+            fi
+            exit 0
+            ;;
+        -n|no-verify)
+            shift
+            if [ -n "$1" ] && [[ "$1" != -* ]]; then
+                git commit -n -m "$1"
+                check_cmd "Failed to commit (no-verify): $1"
+                shift
+            else
+                git commit -n
+                check_cmd "Failed to commit (no-verify)"
+            fi
+            exit 0
+            ;;
+        --empty)
+            shift
+            if [ -n "$1" ] && [[ "$1" != -* ]]; then
+                git commit --allow-empty -m "$1"
+                check_cmd "Failed to create empty commit: $1"
+                shift
+            else
+                git commit --allow-empty
+                check_cmd "Failed to create empty commit"
+            fi
+            exit 0
+            ;;
+        -h|help)
+            usage
+            exit 0
+            ;;
+        *)
+            err "Unknown option: $1"
+            usage
+            exit 1
+            ;;
+    esac
+    shift
+done
+
+exit 0
